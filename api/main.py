@@ -109,10 +109,21 @@ def delete_employee(emp_id: int, db: Session = Depends(get_db)):
     db.commit()
     return
 
-# List all schedules
+# List schedules with optional date range filtering
 @app.get("/schedule", response_model=List[ScheduleOut])
-def list_schedule(db: Session = Depends(get_db)):
-    return db.query(models.Schedule).all()
+def list_schedule(
+    start: date | None = Query(default=None, description="Inclusive start date (YYYY-MM-DD)"),
+    end:   date | None = Query(default=None, description="Inclusive end date (YYYY-MM-DD)"),
+    db: Session = Depends(get_db),
+):
+    q = db.query(models.Schedule)
+    # Ignore corrupted rows without employee_id to keep response valid
+    q = q.filter(models.Schedule.employee_id != None)
+    if start is not None:
+        q = q.filter(models.Schedule.date >= start)
+    if end is not None:
+        q = q.filter(models.Schedule.date <= end)
+    return q.order_by(models.Schedule.date.asc(), models.Schedule.id.asc()).all()
 
 # Create a new schedule
 @app.post("/schedule", response_model=ScheduleOut, status_code=201)

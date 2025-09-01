@@ -1,1 +1,66 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global base styles and simple design tokens */
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --primary: #2563eb;
+  --primary-600: #1d4ed8;
+  --danger: #dc2626;
+  --radius: 12px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout helpers */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,0.03); overflow: hidden; }
+.card-header { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card-title { margin: 0; font-size: 18px; }
+.card-body { padding: 16px; }
+
+/* Buttons */
+.btn { appearance: none; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-weight: 600; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-600); }
+.btn-ghost { background: transparent; color: inherit; }
+.btn-ghost:hover { background: #f3f4f6; }
+.btn-ghost.danger:hover { background: #fee2e2; color: #b91c1c; }
+.btn-danger { background: var(--danger); color: #fff; }
+
+/* Inputs */
+.input, select, input[type="text"], input[type="date"] {
+  width: auto;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+}
+.label { font-size: 12px; font-weight: 600; color: #374151; }
+.muted { color: var(--muted); font-size: 12px; }
+
+/* Simple table/list */
+.table { list-style: none; padding: 0; margin: 0; }
+.row { display: flex; align-items: center; gap: 16px; padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+.cell { min-width: 0; }
+.chip { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: 12px; font-weight: 600; }
+
+/* Angular Calendar minimal overrides (kept) */
+.cal-month-view .cal-day-cell { min-height: 100px; }
+.cal-week-view .cal-hour-rows { min-height: 600px; }
+.cal-event { border-radius: 4px; padding: 2px 4px; font-size: 12px; }
