@@ -68,26 +68,32 @@ import { AnalyticsService, AnalyticsResponse } from '../../core/analytics.servic
   `],
 })
 export class SummaryComponent {
+  // Latest analytics response
   data = signal<AnalyticsResponse | null>(null);
 
+  // Filter form state (inclusive date range, YYYY-MM-DD)
   start = '';
   end = '';
 
+  // Inject AnalyticsService and load initial data
   constructor(private api: AnalyticsService) {
     this.load();
   }
 
+  // Fetch analytics for the current filters and update the signal
   load() {
     const s = this.start || undefined;
     const e = this.end || undefined;
     this.api.get(s, e).subscribe((res) => this.data.set(res));
   }
 
+  // Handle filter form submit: prevent page reload and fetch
   apply(evt: Event) {
     evt.preventDefault();
     this.load();
   }
 
+  // Clear filters and reload the full analytics view
   clear() {
     this.start = '';
     this.end   = '';

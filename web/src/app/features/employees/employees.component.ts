@@ -119,52 +119,60 @@ import { FormsModule } from '@angular/forms';
   `]
 })
 export class EmployeesComponent {
+  // Current list of employees shown in the table
   employees = signal<Employee[]>([]);
+
+  // Form model for creating a new employee
   name = '';
   role = '';
+
+  // Inline edit state
   editId: number | null = null;
   editName = '';
   editRole = '';
 
   constructor(private api: EmployeesService) {
+    // Load initial data when the component is constructed
     this.load();
   }
 
-  // Calls backend via EmployeesService.list()
-  // Updates employees signal with result
+  // Fetch employees from the backend and update the signal
   load() {
     this.api.list().subscribe((data) => this.employees.set(data));
   }
 
+  // Handle create form submit: validate → POST → reset → reload
   add(evt: Event) {
-    evt.preventDefault(); // Stops reloading the page
+    evt.preventDefault(); // Prevent page reload on form submit
     const payload: EmployeeIn = { name: this.name.trim(), role: this.role.trim() };
-    if (!payload.name || !payload.role) return; // Check for empty fields
-    // Call API to create employee
+    if (!payload.name || !payload.role) return; // Require both fields
     this.api.create(payload).subscribe(() => {
-      // Reset form fields
-      this.name = ''; this.role = '';
+      this.name = '';
+      this.role = '';
       this.load();
     });
   }
 
-  // Calls API to delete employee
+  // Delete an employee by id, then refresh the list
   del(id: number) {
     this.api.remove(id).subscribe(() => this.load());
   }
 
+  // Enter edit mode for a row (prefill working fields)
   startEdit(e: Employee) {
     this.editId = e.id;
     this.editName = e.name;
     this.editRole = e.role;
   }
 
+  // Exit edit mode and clear working fields
   cancelEdit() {
     this.editId = null;
     this.editName = '';
     this.editRole = '';
   }
 
+  // Persist edits to the backend, then exit edit mode and reload
   saveEdit(id: number) {
     const payload: EmployeeIn = { name: this.editName.trim(), role: this.editRole.trim() };
     if (!payload.name || !payload.role) return;

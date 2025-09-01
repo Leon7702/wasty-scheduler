@@ -127,7 +127,6 @@ type CellShift = Schedule & { employee_name?: string };
                 <option value="">Select role</option>
                 <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
               </select>
-              <small class="muted">Defaults to the employee's current role (UI only).</small>
             </div>
 
             <div class="field">
@@ -176,11 +175,9 @@ type CellShift = Schedule & { employee_name?: string };
   styles: [`
     :host { display:block; }
     .page { max-width: 1000px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-    /* card styles are provided globally */
     .toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .nav { display:flex; gap:8px; }
     .view { display:flex; gap:8px; align-items:center; }
-    /* buttons, inputs, label, muted are global */
 
     .legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
     .legend-item { display:flex; align-items:center; gap:6px; color:#6b7280; font-size:12px; }
@@ -218,9 +215,7 @@ type CellShift = Schedule & { employee_name?: string };
     .form-grid { display:grid; gap:12px; }
     .field { display:grid; gap:6px; }
     .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:6px; }
-    /* base .chip provided globally; only color variants above */
 
-    /* table, row, cell styles provided globally; only widths below */
     .cell.id { flex:0 0 80px; color:#6b7280; font-variant-numeric:tabular-nums; }
     .cell.date { flex:1 1 0; }
     .cell.shift { flex:0 0 180px; }
@@ -235,11 +230,10 @@ type CellShift = Schedule & { employee_name?: string };
   `]
 })
 export class ScheduleComponent implements OnInit {
-  // employees and schedules
+ 
   employees = signal<Employee[]>([]);
   schedules = signal<Schedule[]>([]);
 
-  // view state
   viewMode: 'month' | 'week' = 'month';
   currentDate = new Date();
   currentMonth = this.currentDate.getMonth();
@@ -250,13 +244,12 @@ export class ScheduleComponent implements OnInit {
 
   viewDate: Date = new Date();
 
-  // modal + form state
+  // Modal + form state for the inline editor
   modalOpen = false;
   selectedDate: Date | null = null;
   editing: CellShift | null = null;
   form: FormGroup;
 
-  // role options (UI only)
   roles = [
     'Operator','Manager','Supervisor','Administrator','Assistant','Team Lead',
     'Developer','Designer','Analyst','Consultant','Coordinator','Intern','HR',
@@ -276,12 +269,14 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
+  // Initial data load: employees + current month
   ngOnInit() {
     this.empApi.list().subscribe(e => this.employees.set(e));
     this.generateMonth();
     this.loadRange();
   }
 
+  // title for the current month/week
   get title(): string {
     const m = this.currentMonth;
     const y = this.currentYear;
@@ -291,7 +286,7 @@ export class ScheduleComponent implements OnInit {
     return `${months[start.getMonth()]} ${start.getDate()} – ${months[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
   }
 
-  // navigation
+  // Go to previous month/week and reload
   prev() {
     if (this.viewMode==='month') {
       this.currentMonth--; if (this.currentMonth < 0) { this.currentMonth = 11; this.currentYear--; }
@@ -302,6 +297,7 @@ export class ScheduleComponent implements OnInit {
       this.generateWeek(prevWeek); this.loadRange();
     }
   }
+  // Go to next month/week and reload 
   next() {
     if (this.viewMode==='month') {
       this.currentMonth++; if (this.currentMonth > 11) { this.currentMonth = 0; this.currentYear++; }
@@ -312,6 +308,7 @@ export class ScheduleComponent implements OnInit {
       this.generateWeek(nextWeek); this.loadRange();
     }
   }
+  //Jump to today for the active view and reload
   today() {
     this.currentDate = new Date();
     this.currentMonth = this.currentDate.getMonth();
@@ -320,13 +317,14 @@ export class ScheduleComponent implements OnInit {
     this.loadRange();
   }
 
+  // Rebuild grid when switching view mode and refresh data
   refreshView() {
     if (this.viewMode==='month') this.generateMonth();
     else this.generateWeek(this.currentDate);
     this.loadRange();
   }
 
-  // calendar building
+  // Build a full month grid
   generateMonth() {
     const firstDay = new Date(this.currentYear, this.currentMonth, 1);
     const lastDay  = new Date(this.currentYear, this.currentMonth + 1, 0);
@@ -338,10 +336,11 @@ export class ScheduleComponent implements OnInit {
       this.calendarDates.push(new Date(cur));
       cur.setDate(cur.getDate() + 1);
     }
-    // also prepare the current week dates for title consistency
+    // also prepare the current week dates
     this.weekDates = this.computeWeek(this.currentDate);
   }
 
+  // Build a 7-day week based on a reference date
   generateWeek(ref: Date) {
     this.weekDates = this.computeWeek(ref);
     this.currentDate = new Date(ref);
@@ -360,6 +359,7 @@ export class ScheduleComponent implements OnInit {
     return days;
   }
 
+  // Compute Monday–Sunday range for a reference date
   computeWeekRange(ref: Date): [Date, Date] {
     const mondayOffset = ((ref.getDay() + 6) % 7);
     const start = new Date(ref); start.setDate(ref.getDate() - mondayOffset);
@@ -367,12 +367,13 @@ export class ScheduleComponent implements OnInit {
     return [start, end];
   }
 
+  // True if d matches today in local time
   isToday(d: Date) {
     const t = new Date();
     return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate();
   }
 
-  // data I/O
+  // Fetch schedules for the inclusive visible range
   loadRange() {
     const start = this.viewMode==='month'
       ? new Date(this.currentYear, this.currentMonth, 1)
@@ -389,11 +390,11 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
-  // util for local ISO without timezone shifts
   private pad(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+  // Build YYYY-MM-DD from local date parts 
   private isoLocal(d: Date) { return `${d.getFullYear()}-${this.pad(d.getMonth()+1)}-${this.pad(d.getDate())}`; }
 
-  // mapping
+  // Map and sort shifts for a given day 
   getShiftsForDate(d: Date): CellShift[] {
     const iso = this.isoLocal(d);
     const items = this.schedules().filter(s => s.date === iso);
@@ -436,13 +437,14 @@ export class ScheduleComponent implements OnInit {
     return this.employees().find(e => e.id === id)?.name;
   }
 
-  // modal control
+  // Open modal for creating a shift on date d
   openModalForDate(d: Date) {
     this.selectedDate = d;
     this.editing = null;
     this.form.reset();
     this.modalOpen = true;
   }
+  // Open modal populated with an existing shift
   openModalForExisting(s: Schedule) {
     this.selectedDate = new Date(s.date + 'T00:00:00');
     this.editing = s;
@@ -455,6 +457,7 @@ export class ScheduleComponent implements OnInit {
     this.maybeDefaultRole();
     this.modalOpen = true;
   }
+  // Close modal and clear selection/edit state
   closeModal() {
     this.modalOpen = false;
     this.selectedDate = null;
@@ -462,6 +465,7 @@ export class ScheduleComponent implements OnInit {
     this.form.reset();
   }
 
+  // Default role_for_shift to the employee's role when empty
   maybeDefaultRole() {
     const eid = this.form.value.employee_id;
     if (!eid) return;
@@ -471,12 +475,14 @@ export class ScheduleComponent implements OnInit {
     }
   }
 
+  // Submit handler: create vs update based on editing state
   onSubmit() {
     if (!this.form.valid || !this.selectedDate) return;
     if (this.editing) this.updateShift();
     else this.createShift();
   }
 
+  // Create a new shift then refresh range
   createShift() {
     const payload: ScheduleIn = {
       date: this.isoLocal(this.selectedDate!),
@@ -490,6 +496,7 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
+  // Update existing shift then refresh range
   updateShift() {
     if (!this.editing) return;
     const payload: ScheduleIn = {
@@ -504,6 +511,7 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
+  // Delete existing shift then refresh range
   deleteShift() {
     if (!this.editing) return;
     this.api.remove(this.editing.id).subscribe(() => {
@@ -512,7 +520,7 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
-  // legacy list delete button
+  // Delete a shift by id from the list view
   del(id: number) {
     this.api.remove(id).subscribe(() => this.loadRange());
   }
