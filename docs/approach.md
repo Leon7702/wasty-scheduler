@@ -83,3 +83,7 @@
 
 - Root README: setup (API + web), endpoints, structure.
 - docs/: additional information with screenshots.
+
+## 9. Time & Effort
+
+- Total time: about 10 hours, including research and a few slower moments to really understand each part before moving on.
