@@ -1,4 +1,3 @@
-/* Global base styles and simple design tokens */
 :root {
   --bg: #f6f8fb;
   --surface: #ffffff;
@@ -60,7 +59,3 @@ html, body {
 .cell { min-width: 0; }
 .chip { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: 12px; font-weight: 600; }
 
-/* Angular Calendar minimal overrides (kept) */
-.cal-month-view .cal-day-cell { min-height: 100px; }
-.cal-week-view .cal-hour-rows { min-height: 600px; }
-.cal-event { border-radius: 4px; padding: 2px 4px; font-size: 12px; }

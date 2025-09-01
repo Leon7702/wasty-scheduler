@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SchedulesService, Schedule, ScheduleIn } from '../../core/schedules.service';
 import { EmployeesService, Employee } from '../../core/employees.service';
-import { CalendarModule, CalendarEvent } from 'angular-calendar';
 
 type CellShift = Schedule & { employee_name?: string };
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CalendarModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   template: `
     <div class="page">
       <section class="card">
@@ -250,7 +249,6 @@ export class ScheduleComponent implements OnInit {
   weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
   viewDate: Date = new Date();
-  events: CalendarEvent[] = [];
 
   // modal + form state
   modalOpen = false;

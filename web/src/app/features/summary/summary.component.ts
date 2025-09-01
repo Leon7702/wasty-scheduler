@@ -1,7 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AnalyticsService, AnalyticsItem, AnalyticsResponse } from '../../core/analytics.service';
+import { AnalyticsService, AnalyticsResponse } from '../../core/analytics.service';
 
 @Component({
   selector: 'app-summary',
