@@ -82,7 +82,7 @@ def list_employees(db: Session = Depends(get_db)):
 @app.post("/employees", response_model=EmployeeOut, status_code=201)
 def create_employee(emp: EmployeeIn, db: Session = Depends(get_db)):
     new_emp = models.Employee(name=emp.name, role=emp.role)
-    db.add(new_emp) # mark for addition
+    db.add(new_emp) # stage changes
     db.commit() # persist changes
     db.refresh(new_emp) # reload objects from db
     return new_emp

@@ -65,24 +65,11 @@ npm start  # ng serve
 ## Front‑end Structure
 
 - `web/src/app/features/employees/*`: employee CRUD screen
-- `web/src/app/features/schedule/*`: calendar + inline editor
+- `web/src/app/features/schedule/*`: calendar
 - `web/src/app/features/summary/*`: analytics table
 - `web/src/app/core/*`: HttpClient services for API
 - `web/src/styles.css`: global tokens and primitives (cards, buttons, inputs)
 
-## Approach & Notes
+## Docs
 
-- State: simple component state using Angular signals; API/data via small services.
-- Calendar: custom grid (month/week) with clear cells, initials avatars, color‑coded shift chips. Cell order is Day → Morning → Evening → Night.
-- UX polish: consistent cards, inputs, buttons, and a compact modal editor.
-- Filtering: front‑end sends `start`/`end` for both schedule and analytics; back‑end applies filters.
-
-## Screenshots / Demo
-
-![employees-component-old](docs/screenshots/employees-component-old.png)
-
-![schedule-component-old](docs/screenshots/schedule-component-old.png)
-
-![summary-component-old](docs/screenshots/summary-component-old.png)
-
-![api-docs](docs/screenshots/api-docs.png)
+- Approach: docs/approach.md
